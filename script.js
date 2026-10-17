@@ -5,6 +5,8 @@ const locations = {
 };
 const labels = Object.keys(locations);
 const start = "A";
+// Ruta definida manualmente (orden de visita): A→I→H→F→D→B→K→C→E→L→J→G→A
+const customRoute = "AIHFDBKCELJGA".split("");
 const ratePerKm = 5;
 const svgNS = "http://www.w3.org/2000/svg";
 const map = document.getElementById("map");
@@ -198,5 +200,5 @@ document.getElementById("playBtn").addEventListener("click",play);
 document.getElementById("pauseBtn").addEventListener("click",pause);
 document.getElementById("resetBtn").addEventListener("click",reset);
 document.getElementById("speed").addEventListener("change",e=>{speed=Number(e.target.value)||1;});
-route=heldKarp();makeLegs();drawRoute();renderInfo();moveCar();setButtons();
+route=customRoute;makeLegs();drawRoute();renderInfo();moveCar();setButtons();
 document.getElementById("pauseBtn").disabled=true;

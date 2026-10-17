@@ -1,12 +1,18 @@
-// Coordenadas del problema original. Son posiciones de un plano abstracto, no GPS.
-const locations = {
-  A:[50,50], B:[12,18], C:[20,75], D:[35,10], E:[42,88], F:[58,22],
-  G:[67,63], H:[82,15], I:[90,48], J:[78,85], K:[30,42], L:[55,96]
-};
-const labels = Object.keys(locations);
-const start = "A";
 // Ruta definida manualmente (orden de visita): A→I→H→F→D→B→K→C→E→L→J→G→A
+const start = "A";
 const customRoute = "AIHFDBKCELJGA".split("");
+// Los nodos se acomodan en círculo siguiendo el orden de la ruta (A arriba, sentido horario).
+// Son posiciones de un plano abstracto, no GPS.
+const order = customRoute.slice(0,-1);
+const locations = {};
+order.forEach((label,i)=>{
+  const ang = (90 - i*360/order.length) * Math.PI/180;
+  locations[label] = [
+    +(50 + 40*Math.cos(ang)).toFixed(2),
+    +(50 + 40*Math.sin(ang)).toFixed(2)
+  ];
+});
+const labels = order;
 const ratePerKm = 5;
 const svgNS = "http://www.w3.org/2000/svg";
 const map = document.getElementById("map");
@@ -45,40 +51,6 @@ function el(tag,attrs={},parent){
   return n;
 }
 
-// Held–Karp exacto: minimiza el recorrido que sale de A, visita todos los nodos y regresa a A.
-function heldKarp(){
-  const others=labels.filter(x=>x!==start), n=others.length, dp=new Map();
-  const key=(mask,last)=>`${mask},${last}`;
-  for(let j=0;j<n;j++) dp.set(key(1<<j,j),{cost:distance(start,others[j]),prev:-1});
-  for(let mask=1;mask<(1<<n);mask++){
-    for(let last=0;last<n;last++){
-      const state=dp.get(key(mask,last));
-      if(!state || !(mask&(1<<last))) continue;
-      for(let next=0;next<n;next++){
-        if(mask&(1<<next)) continue;
-        const nextMask=mask|(1<<next), nextKey=key(nextMask,next);
-        const candidate=state.cost+distance(others[last],others[next]);
-        if(!dp.has(nextKey)||candidate<dp.get(nextKey).cost)
-          dp.set(nextKey,{cost:candidate,prev:last});
-      }
-    }
-  }
-  const full=(1<<n)-1;
-  let bestLast=-1,best=Infinity;
-  for(let last=0;last<n;last++){
-    const candidate=dp.get(key(full,last)).cost+distance(others[last],start);
-    if(candidate<best){best=candidate;bestLast=last;}
-  }
-  const reverse=[];
-  let mask=full,last=bestLast;
-  while(last!==-1){
-    reverse.push(others[last]);
-    const prev=dp.get(key(mask,last)).prev;
-    mask &= ~(1<<last);
-    last=prev;
-  }
-  return [start,...reverse.reverse(),start];
-}
 function drawRoute(){
   routeLayer.replaceChildren(); nodeLayer.replaceChildren(); carLayer.replaceChildren();
   const pts=route.map(point);

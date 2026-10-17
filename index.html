@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Red Logística | Ruta óptima</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">OPTIMIZACIÓN LOGÍSTICA</p>
+        <h1>Ruta óptima de recolección</h1>
+        <p class="subtitle">Recorrido calculado con programación dinámica Held–Karp (TSP exacto).</p>
+      </div>
+      <div class="status"><span class="status-dot"></span> Simulación interactiva</div>
+    </header>
+
+    <section class="metrics" aria-label="Resumen de ruta">
+      <article class="metric"><span>Distancia total</span><strong id="distance">— km</strong></article>
+      <article class="metric"><span>Costo estimado</span><strong id="cost">$—</strong><small>Tarifa: $5.00 por km</small></article>
+      <article class="metric"><span>Nodos visitados</span><strong id="nodeCount">12</strong><small>Incluye salida y regreso a A</small></article>
+    </section>
+
+    <section class="layout">
+      <section class="map-panel">
+        <div class="panel-heading">
+          <div><h2>Mapa de nodos</h2><p>Las letras representan las ubicaciones; no son coordenadas geográficas reales.</p></div>
+          <span class="legend"><i class="legend-line"></i> Ruta óptima</span>
+        </div>
+        <div class="map-wrap">
+          <svg id="map" viewBox="0 0 900 570" role="img" aria-label="Mapa interactivo con nodos y ruta del vehículo">
+            <defs>
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e8edf3" stroke-width="1"/>
+              </pattern>
+              <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#14213d" flood-opacity=".18"/>
+              </filter>
+            </defs>
+            <rect x="0" y="0" width="900" height="570" rx="18" fill="#f8fafc"/>
+            <rect x="0" y="0" width="900" height="570" rx="18" fill="url(#grid)"/>
+            <g id="routeLayer"></g>
+            <g id="nodeLayer"></g>
+            <g id="carLayer"></g>
+          </svg>
+        </div>
+        <div class="map-controls">
+          <button id="playBtn" class="primary">▶ Iniciar recorrido</button>
+          <button id="pauseBtn" class="secondary">Ⅱ Pausar</button>
+          <button id="resetBtn" class="secondary">↺ Reiniciar</button>
+          <label class="speed-control">Velocidad
+            <select id="speed">
+              <option value="1">Normal</option>
+              <option value="1.8">Rápida</option>
+              <option value="0.55">Lenta</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <aside class="side-panel">
+        <section class="card">
+          <h2>Ruta calculada</h2>
+          <p class="muted">Orden de visita del vehículo</p>
+          <div id="routeSequence" class="route-sequence"></div>
+          <div class="route-total"><span>Recorrido</span><strong id="routeText">—</strong></div>
+        </section>
+        <section class="card">
+          <h2>Tramo actual</h2>
+          <div class="current-step">
+            <div class="step-icon">🚗</div>
+            <div><span id="stepLabel">Listo para iniciar</span><strong id="stepDistance">—</strong></div>
+          </div>
+          <div class="progress-track"><div id="progressBar"></div></div>
+          <p class="muted" id="progressText">Presiona “Iniciar recorrido” para ver el carro moverse.</p>
+        </section>
+        <section class="card">
+          <h2>Detalle de tramos</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Tramo</th><th>Distancia</th><th>Costo</th></tr></thead>
+              <tbody id="legsTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </aside>
+    </section>
+    <footer>Demostración académica · Distancias euclidianas a partir de las coordenadas del programa.</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
